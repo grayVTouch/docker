@@ -13,6 +13,4 @@ COPY  conf/nginx.conf	/etc/nginx/
 COPY  conf/conf.d		/etc/nginx/conf.d/
 COPY  startup.sh		/command/
 
-RUN sed -i 's/\r//g' /command/startup.sh
-
 CMD ["/bin/bash" , "/command/startup.sh"]

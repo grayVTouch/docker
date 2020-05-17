@@ -17,6 +17,4 @@ RUN apt update \
 COPY conf			/usr/local/etc/
 COPY startup.sh		/command/
 
-RUN sed -i 's/\r//g' /command/startup.sh
-
 CMD ["/bin/bash" , "/command/startup.sh"]
