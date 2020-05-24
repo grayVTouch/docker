@@ -20,7 +20,12 @@ RUN pecl install redis-5.2.2 && docker-php-ext-enable redis
 RUN pecl install zip-1.18.2 && docker-php-ext-enable zip
 RUN pecl install swoole-4.5.1 && docker-php-ext-enable swoole
 
+WORKDIR /myself
+
+COPY php.ini		/usr/local/etc/php/php.ini
+COPY php-fpm.conf 	/usr/local/etc/php-fpm.conf
+COPY php-fpm.d 		/usr/local/etc/php-fpm.d
 
 volume /myself
 
-CMD ["php-fpm"]
+CMD ["php-fpm" , "-R"]

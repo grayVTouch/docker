@@ -10,6 +10,8 @@ RUN apt install curl -y \
 COPY  vhost			/etc/nginx/vhost
 COPY  nginx.conf	/etc/nginx/
 
+WORKDIR /myself
+
 volume /myself
 
 CMD ["nginx"]
