@@ -1,42 +1,49 @@
-version: '3'
+version: '3.3'
 services:
   nginx:
     build: ./nginx
     ports:
-      - 80:80
+      - "8080:80"
     volumes:
-      - ./workspace:/myself/
-      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf/conf.d:/etc/nginx/conf.d
+      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
+      - "./nginx/vhost:/etc/nginx/vhost"
+      - type: bind
+        source: ./workspace
+        target: /myself
     links:
       - php
     depends_on:
       - php
     networks:
-      - ngx_php
+      - frontend
   php:
     build: ./php
     expose:
-      - 9000
+      - "9000"
     volumes:
-      - ./php/php.ini:/usr/local/etc
-      - ./php/php-fpm.conf:/usr/local/etc/php-fpm.conf
-      - ./php/php-fpm.d:/usr/local/etc/php-fpm.d
-      - ./workspace:/myself
+      - "./php/php.ini:/usr/local/etc/php/php.ini"
+      - "./php/php-fpm.conf:/usr/local/etc/php-fpm.conf"
+      - "./php/php-fpm.d:/usr/local/etc/php-fpm.d"
+      - type: bind
+        source: ./workspace
+        target: /myself
+    links:
+      - mysql
     networks:
-      - ngx_php
-      - php_db
-  db:
+      - frontend
+      - backend
+  mysql:
     build: ./mysql
     expose:
-      - 3306
-    networks:
-      - php_db
+      - "3306"
     volumes:
-      - 
-    
-volumes:
-  - /myself
+      - "./mysql/data:/var/lib/mysql"
+      - "./mysql/my.cnf:/etc/mysql/my.cnf"
+      - "./mysql/conf.d:/etc/mysql/conf.d"
+    environment:
+      - MYSQL_ROOT_PASSWORD=364793
+    networks:
+      - backend
 networks:
-  - ngx_php
-  - php_db
+  frontend:
+  backend:
