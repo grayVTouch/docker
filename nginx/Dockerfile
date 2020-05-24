@@ -1,16 +1,15 @@
-FROM nginx
+FROM nginx:latest
 
 MAINTAINER running "A576236148946@126.com"
 
-RUN mkdir -p /myself/web/test \
-	&& echo "hello boys and girls" > /myself/web/test/index.html \
-	&& apt update \
-	&& apt install curl -y \
+RUN apt update
+RUN apt install curl -y \
 	&& apt install procps -y \
-	&& apt install vim -y
+	&& apt install vim -y 
 
-COPY  conf/nginx.conf	/etc/nginx/
-COPY  conf/conf.d		/etc/nginx/conf.d/
-COPY  startup.sh		/command/
+COPY  vhost			/etc/nginx/vhost
+COPY  nginx.conf	/etc/nginx/
 
-CMD ["/bin/bash" , "/command/startup.sh"]
+volume /myself
+
+CMD ["nginx"]
