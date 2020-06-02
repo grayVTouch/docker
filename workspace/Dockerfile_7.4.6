@@ -10,9 +10,14 @@ RUN apt install procps -y \
         libjpeg62-turbo-dev \
         libpng-dev \
 	&& apt install libsqlite3-dev  -y \
-	&& apt install libzip-dev -y
+	&& apt install libzip-dev -y \
+	&& apt install git -y \
+	&& apt install cron -y \
+	&& apt install rsyslog -y \
+	&& apt install supervisor -y
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd
+RUN docker-php-ext-install sockets
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install pdo_sqlite
 RUN docker-php-ext-install bcmath
@@ -26,8 +31,11 @@ RUN mkdir -p /software \
 
 WORKDIR /myself
 
+COPY start.sh /system/start.sh
 COPY php_7.4.6/php.ini /usr/local/etc/php/php.ini
 
 volume /myself
 
-CMD ["tail" , "-f" , "/dev/null"]
+RUN sed -i 's/\r//g' /system/start.sh
+
+CMD ["/bin/bash" , "/system/start.sh"]

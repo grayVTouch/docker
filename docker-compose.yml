@@ -5,7 +5,7 @@ services:
       context: ./nginx
       dockerfile: Dockerfile_${NGINX_VERSION}
     ports:
-      - "8080:80"
+      - "20001:80"
     volumes:
       - "./nginx/nginx_${NGINX_VERSION}/nginx.conf:/etc/nginx/nginx.conf"
       - "./nginx/nginx_${NGINX_VERSION}/vhost:/etc/nginx/vhost"
@@ -16,8 +16,6 @@ services:
       - php
     depends_on:
       - php
-    networks:
-      - frontend
   php:
     build:
       context: ./php
@@ -33,44 +31,47 @@ services:
         target: /myself
     links:
       - mysql
-    networks:
-      - frontend
-      - backend
+      - redis
+    depends_on:
+      - redis
+      - mysql
   mysql:
     build:
       context: ./mysql
       dockerfile: Dockerfile_${MYSQL_VERSION}
     expose:
       - "3306"
+    ports:
+      - "20002:3306"
     volumes:
       - "./mysql/mysql_${MYSQL_VERSION}/data:/var/lib/mysql"
       - "./mysql/mysql_${MYSQL_VERSION}/my.cnf:/etc/mysql/my.cnf"
       - "./mysql/mysql_${MYSQL_VERSION}/conf.d:/etc/mysql/conf.d"
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-    networks:
-      - backend
   workspace:
     build:
       context: ./workspace
       dockerfile: Dockerfile_${PHP_VERSION}
     volumes:
       - "./workspace/php_${PHP_VERSION}/php.ini:/usr/local/etc/php/php.ini"
+      - "./workspace/crontab:/etc/cron.d"
       - type: bind
         source: ${APP_DIR}
         target: /myself
-    networks:
-      - backend
+    links:
+      - mysql
+      - redis
+    depends_on:
+      - mysql
+      - redis
   redis:
     build:
       context: ./redis
       dockerfile: Dockerfile_${REDIS_VERSION}
     expose:
       - "6379"
+    ports:
+      - "20003:6379"
     volumes:
       - "./redis/redis_${REDIS_VERSION}/data:/data"
-    networks:
-      - backend
-networks:
-  frontend:
-  backend:
