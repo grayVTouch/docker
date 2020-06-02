@@ -1,3 +1,5 @@
-./mysql/data/*
-./nginx/vhost/*
-./php/php-fpm.d/*
+./mysql/mysql_*/data/*
+./nginx/nginx_*/vhost/*
+./php/php_*/php-fpm.d/*
+./workspace/crontab/*
+./redis/redis_*/data/*

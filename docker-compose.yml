@@ -1,14 +1,16 @@
 version: '3.3'
 services:
   nginx:
-    build: ./nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile_${NGINX_VERSION}
     ports:
       - "8080:80"
     volumes:
-      - "./nginx/nginx.conf:/etc/nginx/nginx.conf"
-      - "./nginx/vhost:/etc/nginx/vhost"
+      - "./nginx/nginx_${NGINX_VERSION}/nginx.conf:/etc/nginx/nginx.conf"
+      - "./nginx/nginx_${NGINX_VERSION}/vhost:/etc/nginx/vhost"
       - type: bind
-        source: ./workspace
+        source: ${APP_DIR}
         target: /myself
     links:
       - php
@@ -17,15 +19,17 @@ services:
     networks:
       - frontend
   php:
-    build: ./php
+    build:
+      context: ./php
+      dockerfile: Dockerfile_${PHP_VERSION}
     expose:
       - "9000"
     volumes:
-      - "./php/php.ini:/usr/local/etc/php/php.ini"
-      - "./php/php-fpm.conf:/usr/local/etc/php-fpm.conf"
-      - "./php/php-fpm.d:/usr/local/etc/php-fpm.d"
+      - "./php/php_${PHP_VERSION}/php.ini:/usr/local/etc/php/php.ini"
+      - "./php/php_${PHP_VERSION}/php-fpm.conf:/usr/local/etc/php-fpm.conf"
+      - "./php/php_${PHP_VERSION}/php-fpm.d:/usr/local/etc/php-fpm.d"
       - type: bind
-        source: ./workspace
+        source: ${APP_DIR}
         target: /myself
     links:
       - mysql
@@ -33,15 +37,38 @@ services:
       - frontend
       - backend
   mysql:
-    build: ./mysql
+    build:
+      context: ./mysql
+      dockerfile: Dockerfile_${MYSQL_VERSION}
     expose:
       - "3306"
     volumes:
-      - "./mysql/data:/var/lib/mysql"
-      - "./mysql/my.cnf:/etc/mysql/my.cnf"
-      - "./mysql/conf.d:/etc/mysql/conf.d"
+      - "./mysql/mysql_${MYSQL_VERSION}/data:/var/lib/mysql"
+      - "./mysql/mysql_${MYSQL_VERSION}/my.cnf:/etc/mysql/my.cnf"
+      - "./mysql/mysql_${MYSQL_VERSION}/conf.d:/etc/mysql/conf.d"
     environment:
-      - MYSQL_ROOT_PASSWORD=364793
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      - backend
+  workspace:
+    build:
+      context: ./workspace
+      dockerfile: Dockerfile_${PHP_VERSION}
+    volumes:
+      - "./workspace/php_${PHP_VERSION}/php.ini:/usr/local/etc/php/php.ini"
+      - type: bind
+        source: ${APP_DIR}
+        target: /myself
+    networks:
+      - backend
+  redis:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile_${REDIS_VERSION}
+    expose:
+      - "6379"
+    volumes:
+      - "./redis/redis_${REDIS_VERSION}/data:/data"
     networks:
       - backend
 networks:

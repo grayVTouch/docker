@@ -1,0 +1,13 @@
+FROM mysql:8.0.20
+
+MAINTAINER running "A576236148946@126.com"
+
+RUN apt update
+RUN apt install procps -y \ 
+	&& apt install curl -y \ 
+	&& apt install vim -y
+
+COPY mysql_8.0.20/my.cnf  /etc/mysql
+COPY mysql_8.0.20/conf.d  /etc/mysql/conf.d
+
+CMD ["mysqld"]
