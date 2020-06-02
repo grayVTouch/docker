@@ -8,6 +8,5 @@ RUN apt install procps -y \
 	&& apt install vim -y
 
 COPY mysql_8.0.20/my.cnf  /etc/mysql
-COPY mysql_8.0.20/conf.d  /etc/mysql/conf.d
 
 CMD ["mysqld"]
