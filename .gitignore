@@ -1,0 +1,7 @@
+mysql/mysql_8.0.20/data
+nginx/nginx_1.18.0/vhost/*
+php/php_7.1.30/php-fpm.d/*
+php/php_7.4.6/php-fpm.d/*
+workspace/crontab/*
+redis/redis_6.0.4/data/*
+.idea
